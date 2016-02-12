@@ -7,8 +7,8 @@ public class Run {
 	public static void main (String [] args)
 	{
  		//Creates two links
- 		Link link1 = new LossyLink();
-		Link link2 = new LossyLink();
+ 		Link link1 = new Link();
+		Link link2 = new Link();
 		
 		//Creates two LossyLinks
 /*		Link link1 = new LossyLink();
