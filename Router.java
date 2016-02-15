@@ -103,8 +103,6 @@ public class Router extends SimEnt{
 					return;
 				}
 			}
-	}
-	
-	
+	}	
 	
 }
