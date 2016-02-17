@@ -32,6 +32,7 @@ public class Run {
 		Router routeNode = new Router(3);
 		routeNode.connectInterface(0, link1, host1);
 		routeNode.connectInterface(1, link2, host2);
+		routeNode.connectInterface(2, link3, null);
 				
 		//Creates a ConstantBitRate traffic generator with 100 ms interval
 		TrafficGenerator cbr = new CBRGenerator(10);
@@ -46,7 +47,8 @@ public class Run {
 		host1.StartSending(2, 1, 5, cbr, 1);
 		
 		//Move host1 to interface 3 after 25 ms
-		routeNode.Move(25, 2, host2);
+//		routeNode.Move(25, 2, host2);
+		host2.Move(25, 2);
 		
 		// host2 will send 50 messages with pdf generator to network 1, node 1. Sequence starts with number 50
 //		host2.StartSending(1, 1, 20, pdf, 20); 

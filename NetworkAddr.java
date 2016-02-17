@@ -3,7 +3,7 @@ package Sim;
 // This class represent the network address, it consist of a network identity
 // "_networkId" represented as an integer (if you want to link this to IP number it can be
 // compared to the network part of the IP address like 132.17.9.0). Then _nodeId represent
-// the host part.
+// the host port.
 
 public class NetworkAddr {
 	private int _networkId;
