@@ -18,7 +18,7 @@ public class Router extends SimEnt{
 	
 	
 	public void Move(int time, int inteface, Node node){
-		send(this, new MoveMessage(inteface, node), time);
+//		send(this, new MoveMessage(inteface, node), time);
 	}
 	
 	// This method connects links to the router and also informs the 
@@ -83,24 +83,23 @@ public class Router extends SimEnt{
 	{
 		if (event instanceof Message)
 		{
-//			System.out.println("Router handles packet with seq: " + ((Message) event).seq()+" from node: "+((Message) event).source().networkId()+"." + ((Message) event).source().nodeId() );
+			System.out.println("Router handles packet with seq: " + ((Message) event).seq()+" from node: "+((Message) event).source().networkId()+"." + ((Message) event).source().nodeId() );
 			SimEnt sendNext = getInterface(((Message) event).destination().networkId());
 			if (sendNext == null){
 				System.out.println("No host found at address and port");
 			} else {
 				int interfaceID = getInterfaceId(((Message) event).destination().networkId());
-				System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId() + " on interface " + interfaceID);		
-				send (sendNext, event, _now);			
+				System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId() + " on interface " + interfaceID);
+				send(sendNext, event, _now);
 			}
 	
 	
 		}else if(event instanceof MoveMessage){
 			System.out.println("Node: " + ((MoveMessage) event).node().getAddr().networkId() + " moved to interface " + ((MoveMessage) event)._toInterface + " at time " + SimEngine.getTime());
 			MoveMessage m = ((MoveMessage) event);
+			SimEnt sendNext = getInterface(((MoveMessage) event).getDest().networkId());
+			send(sendNext, event, 0);
 			switchInterface(m._toInterface, m._node);
-			
-			
-			
 		}
 	}
 
@@ -113,9 +112,12 @@ public class Router extends SimEnt{
 		_routingTable[id] = new RouteTableEntry(oldLink, null);
 		
 		
+		System.out.println("Node " + _node.getAddr().networkId()+"."+_node.getAddr().nodeId() + " got new address " + (_toInterface+1) + "." + _node.getAddr().nodeId());
+		
 		//Insert new link and node into table
 		Link newLink = (Link) _routingTable[_toInterface].link();
 		_node.setNewNetworkAddr(_toInterface+1, _node.getAddr().nodeId());
+		_node.forceSetPeer(newLink);
 		connectInterface(_toInterface, newLink, _node);
 	}	
 	

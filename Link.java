@@ -22,6 +22,11 @@ public class Link extends SimEnt{
 		else
 			_connectorB=connectTo;
 	}
+	
+	
+	public void setConnectorA(SimEnt connectTo) {
+		_connectorA=connectTo;		
+	}
 
 	// Called when a message enters the link
 	
@@ -39,5 +44,6 @@ public class Link extends SimEnt{
 				send(_connectorA, ev, _now);
 			}
 		}
-	}	
+	}
+	
 }

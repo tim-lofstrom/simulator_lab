@@ -16,7 +16,7 @@ public class Node extends SimEnt {
 	}
 	
 	public void Move(int time, int inteface){
-		send(this, new MoveMessage(inteface, this), time);
+		send(this, new MoveMessage(inteface, this, new NetworkAddr(_toNetwork, _toHost)), time);
 	}
 	
 	public void setNewNetworkAddr(int network, int node){
@@ -29,6 +29,14 @@ public class Node extends SimEnt {
 
 		if (_peer instanceof Link) {
 			((Link) _peer).setConnector(this);
+		}
+	}
+	
+	public void forceSetPeer(SimEnt peer) {
+		_peer = peer;
+
+		if (_peer instanceof Link) {
+			((Link) _peer).setConnectorA(this);
 		}
 	}
 
@@ -76,8 +84,10 @@ public class Node extends SimEnt {
 				//add a time stamp for a sending a message
 				Statistics.addTime(_id, new NetworkAddr(_toNetwork, _toHost), _seq, (int)SimEngine.getTime());
 				
-				System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " sent message with seq: " + _seq
-						+ " at time " + SimEngine.getTime());
+//				System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " sent message with seq: " + _seq
+//						+ " at time " + SimEngine.getTime());
+				
+				
 				
 				_seq++;
 			}
@@ -85,22 +95,24 @@ public class Node extends SimEnt {
 		if (ev instanceof Message) {
 
 			
-//			System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " receives message with seq: "
-//					+ ((Message) ev).seq() + "" + " at time " + SimEngine.getTime());
+			System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " receives message with seq: "
+					+ ((Message) ev).seq() + "" + " at time " + SimEngine.getTime());
 			
 			
 			//add a timestamp for a Received message
 			Statistics.addTime(((Message) ev).source(), _id, ((Message) ev).seq(), (int)SimEngine.getTime());
 
 		}else if(ev instanceof MoveMessage){
+
 			
 			MoveMessage m = ((MoveMessage) ev);
 			
 			if (m._node == this){
+				m.setDest(new NetworkAddr(1, 1));
 				send(_peer, m, 0);
 				
-			} else if ((m._node.getAddr().networkId() == _toNetwork) && (m._node.getAddr().nodeId() == _toHost)){
-				System.out.println("the host we are sending to moved");
+			} else {
+				_toNetwork = m._node.getAddr().networkId();
 			}
 			
 			
