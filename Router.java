@@ -86,7 +86,7 @@ public class Router extends SimEnt{
 			System.out.println("Router handles packet with seq: " + ((Message) event).seq()+" from node: "+((Message) event).source().networkId()+"." + ((Message) event).source().nodeId() );
 			SimEnt sendNext = getInterface(((Message) event).destination().networkId());
 			if (sendNext == null){
-				System.out.println("No host found at address and port");
+				System.out.println("No host interface found at " + ((Message) event).destination().networkId() + "." + ((Message) event).destination().nodeId());
 			} else {
 				int interfaceID = getInterfaceId(((Message) event).destination().networkId());
 				System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId() + " on interface " + interfaceID);
@@ -98,7 +98,9 @@ public class Router extends SimEnt{
 			System.out.println("Node: " + ((MoveMessage) event).node().getAddr().networkId() + " moved to interface " + ((MoveMessage) event)._toInterface + " at time " + SimEngine.getTime());
 			MoveMessage m = ((MoveMessage) event);
 			SimEnt sendNext = getInterface(((MoveMessage) event).getDest().networkId());
-			send(sendNext, event, 0);
+			if(sendNext != null){
+				send(sendNext, event, 0);	
+			}
 			switchInterface(m._toInterface, m._node);
 		}
 	}

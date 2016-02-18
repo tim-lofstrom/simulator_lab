@@ -83,7 +83,7 @@ public class Run {
 //			
 			//print
 //			Statistics.printTimesReceive();
-			Statistics.printTimes();
+//			Statistics.printTimes();
 //			Statistics.printTimesLaTexFormat();
 			
 			
