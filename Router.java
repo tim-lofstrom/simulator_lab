@@ -17,10 +17,6 @@ public class Router extends SimEnt{
 	}
 	
 	
-	public void Move(int time, int inteface, Node node){
-//		send(this, new MoveMessage(inteface, node), time);
-	}
-	
 	// This method connects links to the router and also informs the 
 	// router of the host connects to the other end of the link
 	
@@ -81,27 +77,44 @@ public class Router extends SimEnt{
 	
 	public void recv(SimEnt source, Event event)
 	{
-		if (event instanceof Message)
+		
+		if ((event instanceof Message) || (event instanceof BUMessage) || (event instanceof BAMessage))
 		{
-			System.out.println("Router handles packet with seq: " + ((Message) event).seq()+" from node: "+((Message) event).source().networkId()+"." + ((Message) event).source().nodeId() );
+//			System.out.println("Router handles packet with seq: " + ((Message) event).seq()+" from node: "+((Message) event).source().networkId()+"." + ((Message) event).source().nodeId() );
 			SimEnt sendNext = getInterface(((Message) event).destination().networkId());
 			if (sendNext == null){
-				System.out.println("No host interface found at " + ((Message) event).destination().networkId() + "." + ((Message) event).destination().nodeId());
+				System.out.println("No host interface found for address " + ((Message) event).destination().networkId() + "." + ((Message) event).destination().nodeId());
 			} else {
-				int interfaceID = getInterfaceId(((Message) event).destination().networkId());
-				System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId() + " on interface " + interfaceID);
+//				int interfaceID = getInterfaceId(((Message) event).destination().networkId());
+//				System.out.println("Router sends to node: " + ((Message) event).destination().networkId()+"." + ((Message) event).destination().nodeId() + " on interface " + interfaceID);
 				send(sendNext, event, _now);
 			}
 	
 	
-		}else if(event instanceof MoveMessage){
-			System.out.println("Node: " + ((MoveMessage) event).node().getAddr().networkId() + " moved to interface " + ((MoveMessage) event)._toInterface + " at time " + SimEngine.getTime());
+		} else if(event instanceof MoveMessage){
+
 			MoveMessage m = ((MoveMessage) event);
-			SimEnt sendNext = getInterface(((MoveMessage) event).getDest().networkId());
-			if(sendNext != null){
-				send(sendNext, event, 0);	
-			}
+			
+			int fromInterface = getInterfaceId(m.getSrc().networkId());
+
+			System.out.println("Node: " + m.node().getAddr().networkId() + " moved to interface " + m._toInterface + " at time " + SimEngine.getTime());
 			switchInterface(m._toInterface, m._node);
+			
+			//Create HomeAgent
+			
+			
+			
+		} else if(event instanceof RSMessage){
+					
+			RSMessage r = ((RSMessage) event);
+			
+			//send RA to node
+			SimEnt sendNext = getInterface(r.getSrc().networkId());
+			int newInterface = r._toInterface;
+			
+			NetworkAddr newAddress = new NetworkAddr((newInterface+1), 1);
+			
+			send(sendNext, new RAMessage(newAddress),0);
 		}
 	}
 
@@ -114,11 +127,11 @@ public class Router extends SimEnt{
 		_routingTable[id] = new RouteTableEntry(oldLink, null);
 		
 		
-		System.out.println("Node " + _node.getAddr().networkId()+"."+_node.getAddr().nodeId() + " got new address " + (_toInterface+1) + "." + _node.getAddr().nodeId());
+//		System.out.println("Node " + _node.getAddr().networkId()+"."+_node.getAddr().nodeId() + " got new address " + (_toInterface+1) + "." + _node.getAddr().nodeId());
 		
 		//Insert new link and node into table
 		Link newLink = (Link) _routingTable[_toInterface].link();
-		_node.setNewNetworkAddr(_toInterface+1, _node.getAddr().nodeId());
+//		_node.setNewNetworkAddr(_toInterface+1, _node.getAddr().nodeId());
 		_node.forceSetPeer(newLink);
 		connectInterface(_toInterface, newLink, _node);
 	}	

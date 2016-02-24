@@ -26,6 +26,10 @@ public class Message implements Event{
 		return _destination; 
 	}
 	
+	public void setDestination(NetworkAddr dest){
+		_destination = dest;
+	}
+	
 	public int seq()
 	{
 		return _seq; 

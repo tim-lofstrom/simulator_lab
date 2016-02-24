@@ -5,9 +5,9 @@ public class BUMessage implements Event{
 	private NetworkAddr _newAddress;
 	private Node _node;
 	
-	public BUMessage(NetworkAddr addr, Node node){
+	public BUMessage(NetworkAddr addr){
 		_newAddress = addr;
-		_node = node;
+//		_node = node;
 	}
 	
 	public void setNode(Node node){

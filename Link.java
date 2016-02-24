@@ -32,7 +32,8 @@ public class Link extends SimEnt{
 	
 	public void recv(SimEnt src, Event ev)
 	{
-		if ((ev instanceof Message) ||(ev instanceof MoveMessage)) 
+		if ((ev instanceof Message) ||(ev instanceof RSMessage) || (ev instanceof BAMessage) ||
+				(ev instanceof BUMessage)|| (ev instanceof RAMessage)|| (ev instanceof MoveMessage)) 
 		{
 			//System.out.println("Link recv msg, passes it through");
 			if (src == _connectorA)

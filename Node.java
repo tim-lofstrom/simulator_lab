@@ -16,7 +16,7 @@ public class Node extends SimEnt {
 	}
 	
 	public void Move(int time, int inteface){
-		send(this, new MoveMessage(inteface, this, new NetworkAddr(_toNetwork, _toHost)), time);
+		send(this, new MoveMessage(inteface, this, _id), time);
 	}
 	
 	public void setNewNetworkAddr(int network, int node){
@@ -86,41 +86,34 @@ public class Node extends SimEnt {
 				
 //				System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " sent message with seq: " + _seq
 //						+ " at time " + SimEngine.getTime());
-				
-				
-				
 				_seq++;
 			}
 		}
 		if (ev instanceof Message) {
 
-			
 			System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " receives message with seq: "
 					+ ((Message) ev).seq() + "" + " at time " + SimEngine.getTime());
 			
 			
 			//add a timestamp for a Received message
 			Statistics.addTime(((Message) ev).source(), _id, ((Message) ev).seq(), (int)SimEngine.getTime());
+			_toNetwork = ((Message) ev).source().networkId();
+			_toHost = ((Message) ev).source().nodeId();
 
 		}else if(ev instanceof MoveMessage){
-
 			
 			MoveMessage m = ((MoveMessage) ev);
+			send(_peer, m, 0);
+			send(_peer, new RSMessage(m._toInterface, this, _id), 1);
 			
-			if (m._node == this){
-				m.setDest(new NetworkAddr(1, 1));
-				send(_peer, m, 0);
-				
-			} else {
-				_toNetwork = m._node.getAddr().networkId();
-			}
+		} else if (ev instanceof RAMessage){
 			
+			_id = ((RAMessage) ev).getNewAddress();
+			System.out.println("Node got new address: " + _id.networkId());
 			
+		} else if (ev instanceof BAMessage){
 			
-//			System.out.println("Node: " + ((MoveMessage) ev).node().getAddr().networkId() + " moved to interface "
-//					+ "" + ((MoveMessage) ev)._toInterface + " at time " + SimEngine.getTime());
-//			MoveMessage m = ((MoveMessage) ev);
-//			switchInterface(m._toInterface, m._node);
+			System.out.println("ACK ok");
 		}
 	}
 	

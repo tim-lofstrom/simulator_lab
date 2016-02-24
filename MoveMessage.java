@@ -7,10 +7,10 @@ public class MoveMessage implements Event{
 	private NetworkAddr _source;
 	private NetworkAddr _destination;
 	
-	public MoveMessage(int toInterface, Node node, NetworkAddr dest){
+	public MoveMessage(int toInterface, Node node, NetworkAddr src){
 		_toInterface = toInterface;
 		_node = node;
-		_destination = dest;
+		_source = src;
 	}
 	
 	public void setDest(NetworkAddr addre){
@@ -19,6 +19,14 @@ public class MoveMessage implements Event{
 	
 	public NetworkAddr getDest(){
 		return _destination;
+	}
+	
+	public void setSrc(NetworkAddr _id) {
+		_source = _id;
+	}
+	
+	public NetworkAddr getSrc(){
+		return _source;
 	}
 	
 	public Node node() {
@@ -32,5 +40,4 @@ public class MoveMessage implements Event{
 	public void entering(SimEnt locale) {
 		
 	}
-
 }

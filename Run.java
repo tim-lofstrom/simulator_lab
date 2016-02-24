@@ -47,7 +47,6 @@ public class Run {
 		host1.StartSending(2, 1, 5, cbr, 1);
 		
 		//Move host1 to interface 3 after 25 ms
-//		routeNode.Move(25, 2, host2);
 		host2.Move(25, 2);
 		
 		// host2 will send 50 messages with pdf generator to network 1, node 1. Sequence starts with number 50
