@@ -16,6 +16,10 @@ public class Message implements Event{
 		_seq=seq;
 	}
 	
+	public Message() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public NetworkAddr source()
 	{
 		return _source; 

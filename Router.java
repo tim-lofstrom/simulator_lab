@@ -97,11 +97,14 @@ public class Router extends SimEnt{
 			
 			int fromInterface = getInterfaceId(m.getSrc().networkId());
 
-			System.out.println("Node: " + m.node().getAddr().networkId() + " moved to interface " + m._toInterface + " at time " + SimEngine.getTime());
+			System.out.println("Node: " + m.getSrc().networkId() + " moved to interface " + m._toInterface + " at time " + SimEngine.getTime());
 			switchInterface(m._toInterface, m._node);
 			
 			//Create HomeAgent
-			
+			HomeAgent agent = new HomeAgent(m.getSrc().networkId(), m.getSrc().nodeId());
+			Link link = (Link) _routingTable[fromInterface].link();
+			agent.forceSetPeer(link);
+			connectInterface(fromInterface, link, agent);
 			
 			
 		} else if(event instanceof RSMessage){

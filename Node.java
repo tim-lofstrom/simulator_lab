@@ -6,6 +6,7 @@ package Sim;
 public class Node extends SimEnt {
 	private TrafficGenerator _generator;
 	private NetworkAddr _id;
+	private NetworkAddr _homeAddress;
 	private SimEnt _peer;
 	private int _sentmsg = 0;
 	private int _seq = 0;
@@ -89,7 +90,14 @@ public class Node extends SimEnt {
 				_seq++;
 			}
 		}
-		if (ev instanceof Message) {
+		
+		if(ev instanceof BAMessage){
+			System.out.println("Got Bind Acknowledgement");
+			BAMessage ba = ((BAMessage) ev);
+			_toNetwork = ba.getNewAddr().networkId();
+			_toHost = ba.getNewAddr().nodeId();
+			
+		} else if (ev instanceof Message) {
 
 			System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " receives message with seq: "
 					+ ((Message) ev).seq() + "" + " at time " + SimEngine.getTime());
@@ -97,23 +105,22 @@ public class Node extends SimEnt {
 			
 			//add a timestamp for a Received message
 			Statistics.addTime(((Message) ev).source(), _id, ((Message) ev).seq(), (int)SimEngine.getTime());
-			_toNetwork = ((Message) ev).source().networkId();
-			_toHost = ((Message) ev).source().nodeId();
+//			_toNetwork = ((Message) ev).source().networkId();
+//			_toHost = ((Message) ev).source().nodeId();
 
 		}else if(ev instanceof MoveMessage){
 			
 			MoveMessage m = ((MoveMessage) ev);
 			send(_peer, m, 0);
-			send(_peer, new RSMessage(m._toInterface, this, _id), 1);
+			send(_peer, new RSMessage(m._toInterface, this, _id), 0);
 			
 		} else if (ev instanceof RAMessage){
 			
+			_homeAddress = _id;
 			_id = ((RAMessage) ev).getNewAddress();
 			System.out.println("Node got new address: " + _id.networkId());
+			send(_peer, new BUMessage(_homeAddress, new NetworkAddr(_toNetwork, _toHost), _id), 0);
 			
-		} else if (ev instanceof BAMessage){
-			
-			System.out.println("ACK ok");
 		}
 	}
 	

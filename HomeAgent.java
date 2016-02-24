@@ -11,9 +11,9 @@ public class HomeAgent extends Node {
 	private NetworkAddr _cn;
 	private NetworkAddr _mn;
 	
-	public HomeAgent(int network, int node) {
-		super(network, node);
-		_id = new NetworkAddr(network, node);
+	public HomeAgent(int network, int addr) {
+		super(network, addr);
+		_id = new NetworkAddr(network, addr);
 	}
 	
 	public void setNewNetworkAddr(int network, int node){
@@ -40,6 +40,14 @@ public class HomeAgent extends Node {
 	public NetworkAddr getAddr() {
 		return _id;
 	}
+	
+	public void setMobileNode(NetworkAddr mn){
+		_mn = mn;
+	}
+	
+	public void setCorrespondingNode(NetworkAddr cn){
+		_cn = cn;
+	}
 
 	// **********************************************************************************
 
@@ -47,28 +55,38 @@ public class HomeAgent extends Node {
 
 	public void recv(SimEnt src, Event ev) {
 
-		if (ev instanceof Message) {
+		
+		if(ev instanceof BUMessage){
+			
+			BUMessage bu = ((BUMessage) ev);
+			_mn = bu.getMobileNodeAddress();
+			_cn = bu.getCorrespondingNodeAddress();
+
+			//send to the _mn an BAMessage
+			send(_peer, new BAMessage(_mn, _id),0);
+			
+		} else if (ev instanceof Message) {
 			
 			int network = ((Message) ev).source().networkId();
 			
 			//Pass the message to either MN or CN
-			if(network == _cn.networkId()){
+			if ((_cn != null) && (network == _cn.networkId())){
 				
 				//if message is from CN, redirect to MN
 				((Message) ev).setDestination(_mn);
+				System.out.println("Home Agent passes to: " + _mn.networkId());
 				send(_peer, ev, 0);
-			} else if(network == _mn.networkId()){
+			} else if((_mn != null) && (network == _mn.networkId())){
 				
 				//if message is from MN, redirect to CN
 				((Message) ev).setDestination(_cn);
+				System.out.println("Home Agent passes to: " + _cn.networkId());
 				send(_peer, ev, 0);
+			} else {
+				System.out.println("Packet lost... or something...?");
 			}
 			
 			
-		} else if (ev instanceof BUMessage){
-			
-			//send to the _mn an BAMessage
-			send(_peer, new BUMessage(_mn),0);
 		}
 	}
 	

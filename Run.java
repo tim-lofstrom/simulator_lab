@@ -50,7 +50,7 @@ public class Run {
 		host2.Move(25, 2);
 		
 		// host2 will send 50 messages with pdf generator to network 1, node 1. Sequence starts with number 50
-//		host2.StartSending(1, 1, 20, pdf, 20); 
+		host2.StartSending(1, 1, 5, cbr, 1); 
 		
 		// Start the simulation engine and of we go!
 		Thread t=new Thread(SimEngine.instance());
