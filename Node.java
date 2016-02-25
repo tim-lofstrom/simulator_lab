@@ -11,6 +11,8 @@ public class Node extends SimEnt {
 	private int _sentmsg = 0;
 	private int _seq = 0;
 	
+	private boolean routeOptimization = true;
+	
 	public Node(int network, int node) {
 		super();
 		_id = new NetworkAddr(network, node);
@@ -61,10 +63,7 @@ public class Node extends SimEnt {
 		_toNetwork = network;
 		_toHost = node;
 		_seq = startSeq;
-		
-		//Initialize the statistics so it knows source, destination and how many packets that will be sent
-		Statistics.Initialize(_id, new NetworkAddr(network, node),_stopSendingAfter, startSeq);
-		
+			
 		send(this, new TimerEvent(), 0);
 	}
 
@@ -79,11 +78,21 @@ public class Node extends SimEnt {
 			
 				//Retrieve the generators next-time for send-event to happen.
 				double tempArriveTime = _generator.getTimeBetweenSending();
-				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost), _seq), 0);
+				NetworkAddr dest;
+				
+				//If home_address is null, then we dont have any home agent, send the message directly to cn
+				
+				
+				if(_homeAddress == null){
+					dest = new NetworkAddr(_toNetwork, _toHost);
+				} else {
+					dest = _homeAddress;
+				}
+				send(_peer, new Message(_id, dest, _seq), 0);
 				send(this, new TimerEvent(), tempArriveTime);
 				
 				//add a time stamp for a sending a message
-				Statistics.addTime(_id, new NetworkAddr(_toNetwork, _toHost), _seq, (int)SimEngine.getTime());
+				Statistics.addSendTime(this, _seq, (int)SimEngine.getTime());
 				
 //				System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " sent message with seq: " + _seq
 //						+ " at time " + SimEngine.getTime());
@@ -92,36 +101,41 @@ public class Node extends SimEnt {
 		}
 		
 		if(ev instanceof BAMessage){
-			System.out.println("Got Bind Acknowledgement");
-			BAMessage ba = ((BAMessage) ev);
-			_toNetwork = ba.getNewAddr().networkId();
-			_toHost = ba.getNewAddr().nodeId();
+			System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " recv msg, bind acknowledgement at time " + SimEngine.getTime());
+//			BAMessage ba = ((BAMessage) ev);
+			if(routeOptimization == true){
+				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),0),0);				
+			}
 			
 		} else if (ev instanceof Message) {
 
-			System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " receives message with seq: "
-					+ ((Message) ev).seq() + "" + " at time " + SimEngine.getTime());
+//			System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " receives message with seq: "
+//					+ ((Message) ev).seq() + "" + " at time " + SimEngine.getTime());
 			
+		
+			Statistics.addRecvTime(this, ((Message) ev).seq(), (int)SimEngine.getTime());
 			
-			//add a timestamp for a Received message
-			Statistics.addTime(((Message) ev).source(), _id, ((Message) ev).seq(), (int)SimEngine.getTime());
-//			_toNetwork = ((Message) ev).source().networkId();
-//			_toHost = ((Message) ev).source().nodeId();
+			_toNetwork = ((Message) ev).source().networkId();
+			_toHost = ((Message) ev).source().nodeId();
 
 		}else if(ev instanceof MoveMessage){
-			
 			MoveMessage m = ((MoveMessage) ev);
 			send(_peer, m, 0);
-			send(_peer, new RSMessage(m._toInterface, this, _id), 0);
+			send(_peer, new RSMessage(m._toInterface,  _id), 0);
 			
 		} else if (ev instanceof RAMessage){
-			
 			_homeAddress = _id;
 			_id = ((RAMessage) ev).getNewAddress();
-			System.out.println("Node got new address: " + _id.networkId());
-			send(_peer, new BUMessage(_homeAddress, new NetworkAddr(_toNetwork, _toHost), _id), 0);
+			System.out.println("Node " + _homeAddress.networkId() + "." + _homeAddress.nodeId() +" got new address: " + _id.networkId() + "." + _id.nodeId());
 			
+			send(_peer, new BUMessage(_homeAddress, new NetworkAddr(_toNetwork, _toHost), _id), 0);
 		}
+	}
+
+	
+	//Compares two nodes by reference
+	public boolean compareTo(Node node) {
+		return this == node;
 	}
 	
 }

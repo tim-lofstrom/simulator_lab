@@ -97,7 +97,7 @@ public class Router extends SimEnt{
 			
 			int fromInterface = getInterfaceId(m.getSrc().networkId());
 
-			System.out.println("Node: " + m.getSrc().networkId() + " moved to interface " + m._toInterface + " at time " + SimEngine.getTime());
+			System.out.println("Node " + m.getSrc().networkId() + "." + m.getSrc().nodeId()+ " moved to interface " + m._toInterface + " at time " + SimEngine.getTime());
 			switchInterface(m._toInterface, m._node);
 			
 			//Create HomeAgent
@@ -108,15 +108,16 @@ public class Router extends SimEnt{
 			
 			
 		} else if(event instanceof RSMessage){
+			
+			System.out.println("Router recv msg, router solicitation at time " + SimEngine.getTime());
 					
 			RSMessage r = ((RSMessage) event);
 			
 			//send RA to node
-			SimEnt sendNext = getInterface(r.getSrc().networkId());
-			int newInterface = r._toInterface;
+			SimEnt sendNext = getInterface(r.getSrc().networkId());			
+			NetworkAddr newAddress = new NetworkAddr((r.toInterface()+1), r.getSrc().nodeId());
 			
-			NetworkAddr newAddress = new NetworkAddr((newInterface+1), 1);
-			
+			System.out.println("Router sent msg, router advertisement at time " + SimEngine.getTime());
 			send(sendNext, new RAMessage(newAddress),0);
 		}
 	}
@@ -129,12 +130,8 @@ public class Router extends SimEnt{
 		Link oldLink = (Link) _routingTable[id].link();
 		_routingTable[id] = new RouteTableEntry(oldLink, null);
 		
-		
-//		System.out.println("Node " + _node.getAddr().networkId()+"."+_node.getAddr().nodeId() + " got new address " + (_toInterface+1) + "." + _node.getAddr().nodeId());
-		
 		//Insert new link and node into table
 		Link newLink = (Link) _routingTable[_toInterface].link();
-//		_node.setNewNetworkAddr(_toInterface+1, _node.getAddr().nodeId());
 		_node.forceSetPeer(newLink);
 		connectInterface(_toInterface, newLink, _node);
 	}	

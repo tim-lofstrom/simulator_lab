@@ -10,13 +10,20 @@ public class LossyLink extends Link{
 	private int _now=0;
 	
 	//Constants for the simulation to use
-	private double lossProbability = 0.1;
-	private int maxDelay = 100;
-	private int minDelay = 50;
+	private double lossProbability = 0.0;
+	private int maxDelay;
+	private int minDelay;
 	
-	public LossyLink()
+	public LossyLink(int minDelay, int maxDelay, double lossRate)
 	{
 		super();
+		this.maxDelay = maxDelay;
+		this.minDelay = minDelay;
+		this.lossProbability = lossRate;
+	}
+	
+	public void setConnectorA(SimEnt connectTo) {
+		_connectorA=connectTo;		
 	}
 	
 	// Connects the link to some simulation entity like
@@ -32,9 +39,21 @@ public class LossyLink extends Link{
 	// Called when a message enters the link
 	public void recv(SimEnt src, Event ev)
 	{
-		
-		if (ev instanceof Message)
-		{
+		if(maxDelay == 5){
+//			System.out.println("ASDASD");
+		}
+		// If it is a MoveMessage we want to pass directly since thats is a simulator modification message.
+		if(ev instanceof MoveMessage){
+			if (src == _connectorA)
+			{
+				send(_connectorB, ev, _now);
+			}
+			else
+			{
+				send(_connectorA, ev, _now);
+			}
+		}else if  ((ev instanceof Message) ||(ev instanceof RSMessage) || (ev instanceof BAMessage) ||
+				(ev instanceof BUMessage)|| (ev instanceof RAMessage)){
 			//Dropped packet according to probability, just return and the packet wont be sent.
 			if(packetDrop()){
 //				System.out.println("Link recv msg, but lost it");

@@ -15,10 +15,6 @@ public class HomeAgent extends Node {
 		super(network, addr);
 		_id = new NetworkAddr(network, addr);
 	}
-	
-	public void setNewNetworkAddr(int network, int node){
-		_id = new NetworkAddr(network, node);
-	}
 
 	// Sets the peer to communicate with. This node is single homed
 	public void setPeer(SimEnt peer) {
@@ -58,14 +54,16 @@ public class HomeAgent extends Node {
 		
 		if(ev instanceof BUMessage){
 			
+			System.out.println("Home Agent recv msg, bind update at time " + SimEngine.getTime());
 			BUMessage bu = ((BUMessage) ev);
 			_mn = bu.getMobileNodeAddress();
 			_cn = bu.getCorrespondingNodeAddress();
 
 			//send to the _mn an BAMessage
-			send(_peer, new BAMessage(_mn, _id),0);
+			send(_peer, new BAMessage(_mn),0);
 			
 		} else if (ev instanceof Message) {
+			
 			
 			int network = ((Message) ev).source().networkId();
 			
@@ -74,19 +72,19 @@ public class HomeAgent extends Node {
 				
 				//if message is from CN, redirect to MN
 				((Message) ev).setDestination(_mn);
-				System.out.println("Home Agent passes to: " + _mn.networkId());
+//				System.out.println("Home Agent recv msg, passes it through to " + _mn.networkId() + "." + _mn.nodeId());
 				send(_peer, ev, 0);
+				
 			} else if((_mn != null) && (network == _mn.networkId())){
 				
 				//if message is from MN, redirect to CN
 				((Message) ev).setDestination(_cn);
-				System.out.println("Home Agent passes to: " + _cn.networkId());
+//				System.out.println("Home Agent recv msg, passes it through to " + _cn.networkId() + "." + _cn.nodeId());
 				send(_peer, ev, 0);
+				
 			} else {
-				System.out.println("Packet lost... or something...?");
+				System.out.println("Home Agent recv msg, but has no mobile node to send to. Packet lost.");
 			}
-			
-			
 		}
 	}
 	

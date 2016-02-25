@@ -6,11 +6,7 @@ public class RAMessage implements Event {
 	public RAMessage(NetworkAddr newAddress){
 		_newAddress = newAddress;
 	}
-	
-	public void setNewAddress(NetworkAddr addre){
-		_newAddress = addre;
-	}
-	
+		
 	public NetworkAddr getNewAddress(){
 		return _newAddress;
 	}	

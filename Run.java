@@ -6,19 +6,19 @@ package Sim;
 public class Run {
 	public static void main (String [] args)
 	{
- 		//Creates two links
- 		Link link1 = new Link();
-		Link link2 = new Link();
-		Link link3 = new Link();
-		
-		//Creates two LossyLinks
-/*		Link link1 = new LossyLink();
-		Link link2 = new LossyLink();*/
+ 		//Creates links
+ 		Link link1 = new LossyLink(0,1,0);
+		Link link2 = new LossyLink(50,55,0);
+		Link link3 = new LossyLink(0,1,0);
 		
 		// Create two end hosts that will be
 		// communicating via the router
 		Node host1 = new Node(1,1);
 		Node host2 = new Node(2,1);
+		
+		//Measure statistics from host1 to host2 and vice verca
+		Statistics.Initialize(host1, host2);
+//		Statistics.Initialize(host2, host1);
 
 		//Connect links to hosts
 		host1.setPeer(link1);
@@ -35,7 +35,7 @@ public class Run {
 		routeNode.connectInterface(2, link3, null);
 				
 		//Creates a ConstantBitRate traffic generator with 100 ms interval
-		TrafficGenerator cbr = new CBRGenerator(10);
+		TrafficGenerator cbr = new CBRGenerator(1);
 		
 		//Creates a NormalDistribution traffic generator with 100 ms interval and 20 ms deviation
 		TrafficGenerator ndf = new NDFGenerator(100, 500);
@@ -44,13 +44,13 @@ public class Run {
 		TrafficGenerator pdf = new PDFGenerator(100);
 		
 		// host1 will send 50 messages with ndf generator to network 2, node 1. Sequence starts with number 1
-		host1.StartSending(2, 1, 5, cbr, 1);
+		host1.StartSending(2, 1, 200, cbr, 1);
 		
 		//Move host1 to interface 3 after 25 ms
-		host2.Move(25, 2);
+		host2.Move(60, 2);
 		
 		// host2 will send 50 messages with pdf generator to network 1, node 1. Sequence starts with number 50
-		host2.StartSending(1, 1, 5, cbr, 1); 
+//		host2.StartSending(1, 1, 10, cbr, 1); 
 		
 		// Start the simulation engine and of we go!
 		Thread t=new Thread(SimEngine.instance());
@@ -79,11 +79,14 @@ public class Run {
 //			
 //			System.out.println("Times by NDF, Latex Sorted");
 //			ndf.printTimesLatexSorted();
-//			
+			
+			
 			//print
 //			Statistics.printTimesReceive();
 //			Statistics.printTimes();
 //			Statistics.printTimesLaTexFormat();
+			
+			Statistics.printTimesReceivePlot();
 			
 			
 			

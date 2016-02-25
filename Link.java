@@ -9,7 +9,7 @@ public class Link extends SimEnt{
 	
 	public Link()
 	{
-		super();	
+		super();
 	}
 	
 	// Connects the link to some simulation entity like
