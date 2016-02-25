@@ -39,9 +39,7 @@ public class LossyLink extends Link{
 	// Called when a message enters the link
 	public void recv(SimEnt src, Event ev)
 	{
-		if(maxDelay == 5){
-//			System.out.println("ASDASD");
-		}
+		
 		// If it is a MoveMessage we want to pass directly since thats is a simulator modification message.
 		if(ev instanceof MoveMessage){
 			if (src == _connectorA)
@@ -61,6 +59,7 @@ public class LossyLink extends Link{
 			}
 			
 //			System.out.println("Link recv msg, passes it through");
+			
 			
 			//Here we add the delay to the send, this depends on what random number the delayCalculate will return.
 			if (src == _connectorA)

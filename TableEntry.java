@@ -14,6 +14,10 @@ public class TableEntry {
 		_node=node;
 	}
 	
+	TableEntry()
+	{
+	}
+	
 	protected SimEnt link()
 	{
 		return _link;

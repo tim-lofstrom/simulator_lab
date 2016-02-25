@@ -24,7 +24,14 @@ public class Router extends SimEnt{
 	{
 		if (interfaceNumber<_interfaces)
 		{
-			_routingTable[interfaceNumber] = new RouteTableEntry(link, node);
+			NetworkAddr addr = null;
+			
+			if(node != null){
+				addr = ((Node) node).getAddr();
+			}
+			
+//			_routingTable[interfaceNumber] = new RouteTableEntry(link, node);
+			_routingTable[interfaceNumber] = new RouteTableEntry(link, addr);
 		}
 		else
 			System.out.println("Trying to connect to port not in router");
@@ -47,6 +54,10 @@ public class Router extends SimEnt{
 //					System.out.println(((Node) _routingTable[i].node()).getAddr().networkId());					
 //				}
 //				
+				if(((NetworkAddr)_routingTable[i].nodeAddress() != null) && (((NetworkAddr)_routingTable[i].nodeAddress()).networkId() == networkAddress)){
+					routerInterface = _routingTable[i].link();
+					return routerInterface;
+				}
 				
 				if( ((Node) _routingTable[i].node()) != null && (((Node) _routingTable[i].node()).getAddr().networkId() == networkAddress))
 				{
@@ -63,6 +74,12 @@ public class Router extends SimEnt{
 		{
 			if (_routingTable[i] != null)
 			{
+				
+				if(((NetworkAddr)_routingTable[i].nodeAddress() != null) && (((NetworkAddr)_routingTable[i].nodeAddress()).networkId() == networkAddress))
+				{
+					return i;
+				}
+				
 				if( ((Node) _routingTable[i].node()) != null && (((Node) _routingTable[i].node()).getAddr().networkId() == networkAddress))
 				{
 					return i;
@@ -114,8 +131,10 @@ public class Router extends SimEnt{
 			RSMessage r = ((RSMessage) event);
 			
 			//send RA to node
-			SimEnt sendNext = getInterface(r.getSrc().networkId());			
+			SimEnt sendNext = (Link) _routingTable[r.toInterface()].link();
 			NetworkAddr newAddress = new NetworkAddr((r.toInterface()+1), r.getSrc().nodeId());
+			_routingTable[r.toInterface()].setAddress(newAddress);
+			
 			
 			System.out.println("Router sent msg, router advertisement at time " + SimEngine.getTime());
 			send(sendNext, new RAMessage(newAddress),0);

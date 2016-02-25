@@ -11,7 +11,7 @@ public class Node extends SimEnt {
 	private int _sentmsg = 0;
 	private int _seq = 0;
 	
-	private boolean routeOptimization = true;
+	private boolean routeOptimization = false;
 	
 	public Node(int network, int node) {
 		super();
@@ -104,19 +104,30 @@ public class Node extends SimEnt {
 			System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " recv msg, bind acknowledgement at time " + SimEngine.getTime());
 //			BAMessage ba = ((BAMessage) ev);
 			if(routeOptimization == true){
-				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),0),0);				
+				System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " send msg, route optimize at time " + SimEngine.getTime() + " to node " + 
+			_toNetwork+ "." + _toHost);				
+				send(_peer, new Message(_id, new NetworkAddr(_toNetwork, _toHost),1),0);
 			}
 			
 		} else if (ev instanceof Message) {
 
-//			System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " receives message with seq: "
-//					+ ((Message) ev).seq() + "" + " at time " + SimEngine.getTime());
+			System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " receives message with seq: "
+					+ ((Message) ev).seq() + "" + " at time " + SimEngine.getTime());
 			
 		
 			Statistics.addRecvTime(this, ((Message) ev).seq(), (int)SimEngine.getTime());
 			
+			
+			int old = _toNetwork;
+			
 			_toNetwork = ((Message) ev).source().networkId();
 			_toHost = ((Message) ev).source().nodeId();
+			
+			if(old != _toNetwork){
+				System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " recv msg, update address at time " + SimEngine.getTime() + " to " +
+			_toNetwork + "." + _toHost);	
+			}
+			
 
 		}else if(ev instanceof MoveMessage){
 			MoveMessage m = ((MoveMessage) ev);
@@ -126,7 +137,7 @@ public class Node extends SimEnt {
 		} else if (ev instanceof RAMessage){
 			_homeAddress = _id;
 			_id = ((RAMessage) ev).getNewAddress();
-			System.out.println("Node " + _homeAddress.networkId() + "." + _homeAddress.nodeId() +" got new address: " + _id.networkId() + "." + _id.nodeId());
+			System.out.println("Node " + _homeAddress.networkId() + "." + _homeAddress.nodeId() +" got new address: " + _id.networkId() + "." + _id.nodeId() + " at time " + SimEngine.getTime());
 			
 			send(_peer, new BUMessage(_homeAddress, new NetworkAddr(_toNetwork, _toHost), _id), 0);
 		}

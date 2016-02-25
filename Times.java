@@ -120,6 +120,18 @@ public class Times {
 			System.out.println(i + "," + (timeNodesSuccess.get(i + 1).recv - timeNodesSuccess.get(i).recv));
 		}
 	}
+	
+	public void printTimesReceivePlot2(){
+		Integer recv;
+		for (int i = 0; i < timeNodes.size() - 1; i++) {
+			recv = timeNodes.get(i).recv;
+			if(recv != null){
+				System.out.println(i + "," + recv);	
+			}else {
+				System.out.println(i + ",0");
+			}
+		}
+	}
 
 	public void printTimesReceivePlot() {
 		Integer recv;
@@ -128,9 +140,9 @@ public class Times {
 			recv = timeNodes.get(i).recv;
 			send = timeNodes.get(i).send;
 			if(recv != null){
-				System.out.println(send + "," + recv);	
+				System.out.println(i + "," + i*(recv - send));	
 			}else {
-				System.out.println(send + ",");
+				System.out.println(i + ",0");
 			}
 		}
 	}

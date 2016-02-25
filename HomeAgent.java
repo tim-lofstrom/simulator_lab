@@ -72,7 +72,7 @@ public class HomeAgent extends Node {
 				
 				//if message is from CN, redirect to MN
 				((Message) ev).setDestination(_mn);
-//				System.out.println("Home Agent recv msg, passes it through to " + _mn.networkId() + "." + _mn.nodeId());
+				System.out.println("Home Agent recv msg, passes it through to " + _mn.networkId() + "." + _mn.nodeId());
 				send(_peer, ev, 0);
 				
 			} else if((_mn != null) && (network == _mn.networkId())){
@@ -83,7 +83,7 @@ public class HomeAgent extends Node {
 				send(_peer, ev, 0);
 				
 			} else {
-				System.out.println("Home Agent recv msg, but has no mobile node to send to. Packet lost.");
+//				System.out.println("Home Agent recv msg, but has no mobile node to send to. Packet lost.");
 			}
 		}
 	}

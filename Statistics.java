@@ -123,6 +123,7 @@ public class Statistics {
 					"ReceiveTimes for connection between source node " + source.networkId() + "." + source.nodeId()
 							+ "" + " and destination node " + destination.networkId() + "." + destination.nodeId());
 
+//			t.test();
 			t.printTimesReceivePlot();
 		}
 	}

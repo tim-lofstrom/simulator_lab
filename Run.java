@@ -7,9 +7,9 @@ public class Run {
 	public static void main (String [] args)
 	{
  		//Creates links
- 		Link link1 = new LossyLink(0,1,0);
-		Link link2 = new LossyLink(50,55,0);
-		Link link3 = new LossyLink(0,1,0);
+ 		Link link1 = new LossyLink(5,6,0);
+		Link link2 = new LossyLink(5,6,0);
+		Link link3 = new LossyLink(5,6,0);
 		
 		// Create two end hosts that will be
 		// communicating via the router
@@ -35,7 +35,7 @@ public class Run {
 		routeNode.connectInterface(2, link3, null);
 				
 		//Creates a ConstantBitRate traffic generator with 100 ms interval
-		TrafficGenerator cbr = new CBRGenerator(1);
+		TrafficGenerator cbr = new CBRGenerator(5);
 		
 		//Creates a NormalDistribution traffic generator with 100 ms interval and 20 ms deviation
 		TrafficGenerator ndf = new NDFGenerator(100, 500);
@@ -44,10 +44,10 @@ public class Run {
 		TrafficGenerator pdf = new PDFGenerator(100);
 		
 		// host1 will send 50 messages with ndf generator to network 2, node 1. Sequence starts with number 1
-		host1.StartSending(2, 1, 200, cbr, 1);
+		host1.StartSending(2, 1, 10, cbr, 1);
 		
 		//Move host1 to interface 3 after 25 ms
-		host2.Move(60, 2);
+		host2.Move(20, 2);
 		
 		// host2 will send 50 messages with pdf generator to network 1, node 1. Sequence starts with number 50
 //		host2.StartSending(1, 1, 10, cbr, 1); 
@@ -86,7 +86,7 @@ public class Run {
 //			Statistics.printTimes();
 //			Statistics.printTimesLaTexFormat();
 			
-			Statistics.printTimesReceivePlot();
+//			Statistics.printTimesReceivePlot();
 			
 			
 			
