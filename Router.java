@@ -111,18 +111,20 @@ public class Router extends SimEnt{
 		} else if(event instanceof MoveMessage){
 
 			MoveMessage m = ((MoveMessage) event);
-			
 			int fromInterface = getInterfaceId(m.getSrc().networkId());
-
-			System.out.println("Node " + m.getSrc().networkId() + "." + m.getSrc().nodeId()+ " moved to interface " + m._toInterface + " at time " + SimEngine.getTime());
-			switchInterface(m._toInterface, m._node);
 			
 			//Create HomeAgent
-			HomeAgent agent = new HomeAgent(m.getSrc().networkId(), m.getSrc().nodeId());
-			Link link = (Link) _routingTable[fromInterface].link();
-			agent.forceSetPeer(link);
-			connectInterface(fromInterface, link, agent);
+			if(m.createHomeAgent == true){
+				HomeAgent agent = new HomeAgent(m.getSrc().networkId(), m.getSrc().nodeId());
+				Link link = (Link) _routingTable[fromInterface].link();
+				agent.forceSetPeer(link);
+				connectInterface(fromInterface, link, agent);
+			}else {
+				System.out.println("Node " + m.getSrc().networkId() + "." + m.getSrc().nodeId()+ " moved to interface " + m._toInterface + " at time " + SimEngine.getTime());
+				switchInterface(m._toInterface, m._node);
+			}
 			
+
 			
 		} else if(event instanceof RSMessage){
 			
@@ -141,14 +143,16 @@ public class Router extends SimEnt{
 		}
 	}
 
+	private void clearTableEntry(int _toInterface, Node _node){
+		
+		//Clear Table entry
+		int id = getInterfaceId(_node.getAddr().networkId());
+		Link oldLink = (Link) _routingTable[id].link();
+		_routingTable[id] = new RouteTableEntry(oldLink, null);		
+	}
 
 	private void switchInterface(int _toInterface, Node _node) {
 
-		//Clear the old table entry
-		int id = getInterfaceId(_node.getAddr().networkId());
-		Link oldLink = (Link) _routingTable[id].link();
-		_routingTable[id] = new RouteTableEntry(oldLink, null);
-		
 		//Insert new link and node into table
 		Link newLink = (Link) _routingTable[_toInterface].link();
 		_node.forceSetPeer(newLink);

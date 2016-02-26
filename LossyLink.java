@@ -11,7 +11,7 @@ public class LossyLink extends Link{
 	
 	//Constants for the simulation to use
 	private double lossProbability = 0.0;
-	private int maxDelay;
+	int maxDelay;
 	private int minDelay;
 	
 	public LossyLink(int minDelay, int maxDelay, double lossRate)

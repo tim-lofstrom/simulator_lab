@@ -11,15 +11,24 @@ public class Node extends SimEnt {
 	private int _sentmsg = 0;
 	private int _seq = 0;
 	
-	private boolean routeOptimization = false;
+	private boolean routeOptimization = true;
 	
 	public Node(int network, int node) {
 		super();
 		_id = new NetworkAddr(network, node);
 	}
 	
-	public void Move(int time, int inteface){
-		send(this, new MoveMessage(inteface, this, _id), time);
+		
+	public void Move(int time, int inteface, Router fromRouteNode, Router toRouteNode){
+		
+		//set to trigger movemessage in router
+		send(toRouteNode, new MoveMessage(inteface, this, _id, false), time);
+		
+		// send trigger for home node that we unplugged
+		send(fromRouteNode, new MoveMessage(inteface, this, _id, true), time+1);
+		
+		//set to trigger movemessage in node
+		send(this, new MoveMessage(inteface, this, _id, false), time+2);
 	}
 	
 	public void setNewNetworkAddr(int network, int node){
@@ -131,7 +140,15 @@ public class Node extends SimEnt {
 
 		}else if(ev instanceof MoveMessage){
 			MoveMessage m = ((MoveMessage) ev);
-			send(_peer, m, 0);
+			
+//			System.out.println(((LossyLink)_peer).maxDelay);
+			
+			//Send MoveEven directly to router and not via the Link.
+//			send(m.getRouter(), m, 0);
+
+//			System.out.println(((LossyLink)_peer).maxDelay);
+			
+			//Send router solicitation to the new router, this goes via the link.
 			send(_peer, new RSMessage(m._toInterface,  _id), 0);
 			
 		} else if (ev instanceof RAMessage){

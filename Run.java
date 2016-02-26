@@ -8,8 +8,12 @@ public class Run {
 	{
  		//Creates links
  		Link link1 = new LossyLink(5,6,0);
-		Link link2 = new LossyLink(5,6,0);
-		Link link3 = new LossyLink(5,6,0);
+		Link link2 = new LossyLink(5,7,0);
+		Link link3 = new LossyLink(5,8,0);
+		
+		Link link4 = new LossyLink(5,6,0);
+		Link link5 = new LossyLink(5,7,0);
+		Link link6 = new LossyLink(5,8,0);
 		
 		// Create two end hosts that will be
 		// communicating via the router
@@ -33,6 +37,11 @@ public class Run {
 		routeNode.connectInterface(0, link1, host1);
 		routeNode.connectInterface(1, link2, host2);
 		routeNode.connectInterface(2, link3, null);
+		
+		Router routeNode2 = new Router(3);
+		routeNode2.connectInterface(0, link3, null);
+		routeNode2.connectInterface(1, link4, null);
+		routeNode2.connectInterface(2, link5, null);
 				
 		//Creates a ConstantBitRate traffic generator with 100 ms interval
 		TrafficGenerator cbr = new CBRGenerator(5);
@@ -47,7 +56,7 @@ public class Run {
 		host1.StartSending(2, 1, 10, cbr, 1);
 		
 		//Move host1 to interface 3 after 25 ms
-		host2.Move(20, 2);
+		host2.Move(20, 2, routeNode, routeNode2);
 		
 		// host2 will send 50 messages with pdf generator to network 1, node 1. Sequence starts with number 50
 //		host2.StartSending(1, 1, 10, cbr, 1); 

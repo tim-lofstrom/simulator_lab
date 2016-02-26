@@ -6,13 +6,14 @@ public class MoveMessage implements Event{
 	int _toInterface;
 	private NetworkAddr _source;
 	private NetworkAddr _destination;
+	boolean createHomeAgent;
 	
-	public MoveMessage(int toInterface, Node node, NetworkAddr src){
+	public MoveMessage(int toInterface, Node node, NetworkAddr src, boolean createHA){
 		_toInterface = toInterface;
 		_node = node;
 		_source = src;
 	}
-	
+		
 	public void setDest(NetworkAddr addre){
 		_destination = addre;
 	}
@@ -25,6 +26,7 @@ public class MoveMessage implements Event{
 		_source = _id;
 	}
 	
+
 	public NetworkAddr getSrc(){
 		return _source;
 	}
