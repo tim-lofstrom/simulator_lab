@@ -1,19 +1,24 @@
 package Sim;
 
+import java.util.ArrayList;
+
 // This class implements a simple router
 
 public class Router extends SimEnt{
 
 	private RouteTableEntry [] _routingTable;
+	private ArrayList <RouteTableEntryNext> _next;
 	private int _interfaces;
 	private int _now=0;
+	private NetworkAddr _id;
 
 	// When created, number of interfaces are defined
 	
-	Router(int interfaces)
+	Router(int interfaces, NetworkAddr id)
 	{
 		_routingTable = new RouteTableEntry[interfaces];
 		_interfaces=interfaces;
+		_id = id;
 	}
 	
 	
@@ -157,6 +162,18 @@ public class Router extends SimEnt{
 		Link newLink = (Link) _routingTable[_toInterface].link();
 		_node.forceSetPeer(newLink);
 		connectInterface(_toInterface, newLink, _node);
-	}	
+	}
+	
+	public NetworkAddr getNextHop(NetworkAddr dest){
+		//lookup in routetableentrynext
+		NetworkAddr nextHopAddr = null;
+		for(int i = 0; i <= _next.size(); i++){
+			if(dest == _next.get(i).dest()){
+				nextHopAddr = _next.get(i).nextHop();
+				return nextHopAddr;
+			}
+		}
+		return nextHopAddr;
+	}
 	
 }
