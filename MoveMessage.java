@@ -12,6 +12,7 @@ public class MoveMessage implements Event{
 		_toInterface = toInterface;
 		_node = node;
 		_source = src;
+		createHomeAgent = createHA;
 	}
 		
 	public void setDest(NetworkAddr addre){

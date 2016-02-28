@@ -51,12 +51,13 @@ public class LossyLink extends Link{
 				send(_connectorA, ev, _now);
 			}
 		}else if  ((ev instanceof Message) ||(ev instanceof RSMessage) || (ev instanceof BAMessage) ||
-				(ev instanceof BUMessage)|| (ev instanceof RAMessage)){
+				(ev instanceof BUMessage)|| (ev instanceof RAMessage) || (ev instanceof RIPMessage)){
 			//Dropped packet according to probability, just return and the packet wont be sent.
 			if(packetDrop()){
 //				System.out.println("Link recv msg, but lost it");
 				return;
 			}
+			
 			
 //			System.out.println("Link recv msg, passes it through");
 			

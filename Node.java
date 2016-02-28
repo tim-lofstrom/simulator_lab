@@ -133,7 +133,7 @@ public class Node extends SimEnt {
 			_toHost = ((Message) ev).source().nodeId();
 			
 			if(old != _toNetwork){
-				System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " recv msg, update address at time " + SimEngine.getTime() + " to " +
+				System.out.println("Node " + _id.networkId() + "." + _id.nodeId() + " recv msg, update send address at time " + SimEngine.getTime() + " to " +
 			_toNetwork + "." + _toHost);	
 			}
 			
@@ -149,6 +149,7 @@ public class Node extends SimEnt {
 //			System.out.println(((LossyLink)_peer).maxDelay);
 			
 			//Send router solicitation to the new router, this goes via the link.
+			
 			send(_peer, new RSMessage(m._toInterface,  _id), 0);
 			
 		} else if (ev instanceof RAMessage){
