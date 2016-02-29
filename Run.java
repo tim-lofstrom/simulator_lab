@@ -12,12 +12,13 @@ public class Run {
 		Link link4 = new LossyLink(5, 6, 0);
 		Link link5 = new LossyLink(5, 7, 0);
 		Link link6 = new LossyLink(5, 8, 0);
+		Link link7 = new LossyLink(5, 8, 0);
+		Link link8 = new LossyLink(5, 8, 0);
 
 		// Create two end hosts that will be
 		// communicating via the router
 		Node host1 = new Node(1, 1);
-		Node host2 = new Node(11, 1);
-		Node host3 = new Node(21, 1);
+		Node host2 = new Node(41, 1);
 
 		// Measure statistics from host1 to host2 and vice verca
 		Statistics.Initialize(host1, host2);
@@ -25,7 +26,7 @@ public class Run {
 
 		// Connect links to hosts
 		host1.setPeer(link1);
-		host2.setPeer(link3);
+		host2.setPeer(link7);
 
 		// Creates as router and connect
 		// links to it. Information about
@@ -37,14 +38,29 @@ public class Run {
 		Router routeNode = new Router(3, 0, 1);
 
 		// Create a routerNode2 with 2 interfaces and address 10.1
-		Router routeNode2 = new Router(2, 10, 1);
+		Router routeNode1 = new Router(2, 10, 1);
+		
+		Router routeNode2 = new Router(3, 20, 1);
+		Router routeNode3 = new Router(3, 30, 1);
+		Router routeNode4 = new Router(2, 40, 1);
 
 		routeNode.connectInterface(0, link1, host1);
-		routeNode.connectInterface(1, link2, routeNode2);
-		routeNode.connectInterface(2, link4, null);
+		routeNode.connectInterface(1, link2, routeNode1);
+		routeNode.connectInterface(2, link3, routeNode2);
 
-		routeNode2.connectInterface(0, link2, routeNode);
-		routeNode2.connectInterface(1, link3, host2);
+		routeNode1.connectInterface(0, link2, routeNode);
+		routeNode1.connectInterface(1, link4, routeNode3);
+		
+		routeNode2.connectInterface(0, link3, routeNode);
+		routeNode2.connectInterface(1, link5, routeNode3);
+		routeNode2.connectInterface(2, link8, null);
+		
+		routeNode3.connectInterface(0, link5, routeNode2);
+		routeNode3.connectInterface(1, link4, routeNode1);
+		routeNode3.connectInterface(2, link6, routeNode4);
+		
+		routeNode4.connectInterface(0, link6, routeNode3);
+		routeNode4.connectInterface(1, link7, host2);
 		
 		// Creates a ConstantBitRate traffic generator with 100 ms interval
 		TrafficGenerator cbr = new CBRGenerator(10);
@@ -59,14 +75,20 @@ public class Run {
 
 		// host1 will send 50 messages with ndf generator to network 2, node 1.
 		// Sequence starts with number 1
-		host1.StartSending(11, 1, 10, cbr, 1);
+		host1.StartSending(41, 1, 100, cbr, 1);
+		
+		int interval = 10;
 		
 		// Start up the rip protocol with timeintercal 5 ms and total of 10 messages
-		routeNode.StartRIP(10, 10);
-		routeNode2.StartRIP(10, 10);
+		routeNode.StartRIP(10, interval);
+		routeNode1.StartRIP(10, interval);
+		routeNode2.StartRIP(10, interval);
+		routeNode3.StartRIP(10, interval);
+		routeNode4.StartRIP(10, interval);
 
-		// Move host1 to interface 3 after 25 ms
-		host2.Move(30, 2, routeNode2, routeNode);
+		// Move host1 to interface 3 after 25 ms from 2 to 1
+		host2.Move(60, 2, routeNode4, routeNode2);
+		
 
 		// host2 will send 50 messages with pdf generator to network 1, node 1.
 		// Sequence starts with number 50

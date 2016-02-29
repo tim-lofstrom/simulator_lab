@@ -143,7 +143,7 @@ public class Router extends SimEnt{
 		}
 		if ((event instanceof Message) || (event instanceof BUMessage) || (event instanceof BAMessage))
 		{
-//			System.out.println("Router handles packet with seq: " + ((Message) event).seq()+" from node: "+((Message) event).source().networkId()+"." + ((Message) event).source().nodeId() );
+//			System.out.println("Router " + _id.networkId() + " handles packet with seq: " + ((Message) event).seq()+" from node: "+((Message) event).source().networkId()+"." + ((Message) event).source().nodeId() );
 			SimEnt sendNext = getInterface(((Message) event).destination().networkId());
 			if (sendNext == null){
 				
@@ -200,6 +200,8 @@ public class Router extends SimEnt{
 			System.out.println("Router sent msg, router advertisement at time " + SimEngine.getTime());
 			send(sendNext, new RAMessage(newAddress),0);
 		} else if (event instanceof RIPMessage){
+			
+//			System.out.println("Router " + _id.networkId() + " recv msg, rip");
 			
 			RIPMessage r = ((RIPMessage)event);
 			
